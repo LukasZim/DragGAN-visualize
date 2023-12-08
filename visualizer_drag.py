@@ -140,6 +140,8 @@ class Visualizer(imgui_window.ImguiWindow):
         self.button_w = self.font_size * 5
         self.label_w = round(self.font_size * 4.5)
 
+
+
         # Store W check
         if self.drag_widget.store_W1:
             # get the W
@@ -171,6 +173,12 @@ class Visualizer(imgui_window.ImguiWindow):
 
             self.drag_widget.apply_diff = False
             self.force_render = True
+            self.clear_result()
+
+        if self.visualize_latent.times_minus_one:
+            with torch.no_grad():
+                self._async_renderer.renderer_obj.w *= -1
+            self.visualize_latent.times_minus_one= False
             self.clear_result()
 
         # Detect mouse dragging in the result area.
@@ -284,7 +292,7 @@ class Visualizer(imgui_window.ImguiWindow):
 
             imshow_w = int(self._tex_obj.width * zoom)
             imshow_h = int(self._tex_obj.height * zoom)
-            self._image_area = [int(self.pane_w + max_w / 2 - imshow_w / 2), int(max_h / 2 - imshow_h / 2), imshow_w,
+            self._image_area = [int(self.pane_w + max_w / 2 - imshow_w / 2 ), int(max_h / 2 - imshow_h / 2), imshow_w,
                                 imshow_h]
         if 'error' in self.result:
             self.print_error(self.result.error)
