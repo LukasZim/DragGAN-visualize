@@ -87,6 +87,7 @@ class Renderer:
             self._end_event = torch.cuda.Event(enable_timing=True)
         self._disable_timing = disable_timing
         self._net_layers = dict()  # {cache_key: [dnnlib.EasyDict, ...], ...}
+        self.scale = 1
 
     def render(self, search_size, **args):
         if self._disable_timing:
@@ -336,6 +337,7 @@ class Renderer:
             loss_motion = 0
             res.stop = True
             for j, point in enumerate(points):
+                print(point)
                 direction = torch.Tensor([targets[j][1] - point[1], targets[j][0] - point[0]])
                 if torch.linalg.norm(direction) > max(2 / 512 * h, 2):
                     res.stop = False
@@ -343,13 +345,24 @@ class Renderer:
                     distance = ((xx.to(self._device) - point[0]) ** 2 + (yy.to(self._device) - point[1]) ** 2) ** 0.5
                     relis, reljs = torch.where(distance < round(r1 / 512 * h))
                     direction = direction / (torch.linalg.norm(direction) + 1e-7)
-                    gridh = (relis + direction[1]) / (h - 1) * 2 - 1
-                    gridw = (reljs + direction[0]) / (w - 1) * 2 - 1
+                    gridh = (relis + direction[1] * self.scale) / (h - 1) * 2 - 1
+                    gridw = (reljs + direction[0] * self.scale) / (w - 1) * 2 - 1
+                    print(direction)
+                    print((relis + direction[1] * self.scale))
+                    print((relis + direction[1]))
+                    print(relis)
+                    print()
+                    print((reljs + direction[0] * self.scale))
+                    print((reljs + direction[0]))
+                    print(reljs)
                     grid = torch.stack([gridw, gridh], dim=-1).unsqueeze(0).unsqueeze(0)
                     target = F.grid_sample(feat_resize.float(), grid, align_corners=True).squeeze(2)
                     loss_motion += F.l1_loss(feat_resize[:, :, relis, reljs].detach(), target)
 
             loss = loss_motion
+            print(loss)
+            print("===========")
+
             if mask is not None:
                 if mask.min() == 0 and mask.max() == 1:
                     mask_usq = mask.to(self._device).unsqueeze(0).unsqueeze(0)

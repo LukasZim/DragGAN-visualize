@@ -210,6 +210,7 @@ class Visualizer(imgui_window.ImguiWindow):
         expanded, _visible = imgui_utils.collapsing_header('Latent vector Visualization', default=True)
         self.visualize_latent(expanded)
 
+
         # Render.
         if self.is_skipping_frames() and not self.force_render:
             pass
@@ -217,6 +218,8 @@ class Visualizer(imgui_window.ImguiWindow):
             self._defer_rendering -= 1
         elif self.args.pkl is not None:
             self.force_render = False
+            if self._async_renderer.renderer_obj is not None:
+                self._async_renderer.renderer_obj.scale = self.visualize_latent.step_scale
             self._async_renderer.set_args(self.drag_widget.search_size, **self.args)
             result = self._async_renderer.get_result()
             if self.drag_widget.drag_once:

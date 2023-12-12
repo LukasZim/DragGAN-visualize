@@ -28,6 +28,7 @@ class VisualizeWidget:
         self.histogram = None
         self.plt = None
         self.times_minus_one = False
+        self.step_scale = 1
 
     def __call__(self, show=True):
         viz = self.viz
@@ -76,6 +77,13 @@ class VisualizeWidget:
                 if imgui_utils.button("w * -1",width=viz.button_w,enabled='image' in viz.result):
                     # self.plt.ion()
                     self.times_minus_one = True
+
+
+                imgui.text(' ')
+                imgui.same_line(viz.label_w)
+                with imgui_utils.item_width(viz.font_size * 6):
+                    changed, self.step_scale = imgui.input_int('Step Scale', self.step_scale)
+
 
 
             if self.previous == self.show_value and not (self.started and not self.started_previous) and self.w_index == self.w_index_previous:
