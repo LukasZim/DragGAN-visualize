@@ -94,7 +94,7 @@ class VisualizeWidget:
             if not l == []:
                 self.tex_img = np.array(l, np.uint8)
                 self.texture_obj = gl_utils.Texture(image=self.tex_img, bilinear=False, mipmap=False)
-                self.texture_obj.draw(pos=[600, 850], zoom=[10.0, 10.0], align=0.5, rint=True)
+                self.texture_obj.draw(pos=[600, 850], zoom=[15.0, 15.0], align=0.5, rint=True)
                 if self.show_value == "diff":
                     w = self.w_diff
                 if self.show_value == "W2":

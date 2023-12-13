@@ -215,6 +215,12 @@ class DragWidget:
                 with imgui_utils.item_width(viz.font_size * 6):
                     changed, self.r2 = imgui.input_int('Step size', self.r2)
 
+                imgui.text(' ')
+                imgui.same_line(viz.label_w)
+                with imgui_utils.item_width(viz.font_size * 6):
+                    changed, self.feature_idx = imgui.input_int('Feature ID', self.feature_idx%8)
+
+
         self.disabled_time = max(self.disabled_time - viz.frame_delta, 0)
         if self.defer_frames > 0:
             self.defer_frames -= 1
